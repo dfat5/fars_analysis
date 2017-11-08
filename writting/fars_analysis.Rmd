@@ -6,8 +6,15 @@ output: pdf_document
 ---
 
 #Results 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```{r global_options}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+
+```
+
+```{r loading library data and functions}
+
+
+
 library(tidyverse)
 library(ggthemes)
 library(knitr)
@@ -91,7 +98,7 @@ graph2 %>%
 
 ```
 
-### Figure 3: Prevalence of cannabinoid drugs in fatally injured drivers by year and age group
+#### Figure 3: Prevalence of cannabinoid drugs in fatally injured drivers by year and age group
 
 ```{r graph 3}
 graph3 <- clean_fars %>% 
@@ -115,6 +122,8 @@ graph3 %>%
         y = "Positive for Cannabinoid, %")
 ```
 
+
+#### Prevalence of drugs in fatally injured drivers for 1999 and 2010 by drug type
 ```{r injured driver}
 driver_table <- clean_fars %>% 
   filter(year %in% c(1999, 2010)) %>% 
@@ -132,7 +141,7 @@ kable(driver_table)
 
 ```
 
-
+#### Statistics for testing for trend in prevalence of drugs over study years by drug type using Cochran-Armitage trend test
 ```{r}
 drug_list <- c("Alcohol", "Nonalcohol", "Narcotic", "Depressant", 
                "Stimulant", "Cannabinoid", "Other")
@@ -142,4 +151,6 @@ drug_trend_tests_ca <- dplyr::bind_rows(drug_trend_tests_ca) %>%
   dplyr::select(drug, Z, p.value) 
 drug_trend_tests_ca %>% knitr::kable()
 ```
+
+##### Statistics for testing for trend in prevalence of drugs over study years by drug type using Wald test of logistic regression coefficient for “year”
 

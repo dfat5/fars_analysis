@@ -24,11 +24,11 @@ perc_cis(x = 9000, n = 23000)
 #test for trend using Cochran-Armitage trend test function
 
 
-test_trend_ca <- function(drug, df = clean_fars){
+test_trend_ca <- function(drug, data = clean_fars){
   
  
   if (drug == "Nonalcohol") {
-  to_test <- df %>% 
+  to_test <- data %>% 
     filter(drug_type != "Alcohol") %>% 
     group_by(year, unique_id) %>%
     summarize(positive = sum(positive_for_drug, na.rm = TRUE),
@@ -42,7 +42,7 @@ test_trend_ca <- function(drug, df = clean_fars){
   
   }
   else { 
-    to_test <- df %>% 
+    to_test <- data %>% 
       filter(drug_type == drug ) %>% 
       group_by(year) %>%
       summarize(positive = sum(positive_for_drug, na.rm = TRUE),
@@ -61,6 +61,9 @@ return(out)
   
 }
 
+
+
+
 test_trend_ca(drug = "Nonalcohol")
 
 test_trend_ca(drug = "Alcohol")
@@ -69,7 +72,37 @@ test_trend_ca(drug = "Stimulant")
 
 
 
+test_trend_log_reg <- function(drug, data = clean_fars) {
+  
+  if (drug == "Nonalcohol"){
+    to_test <- data %>% 
+      filter(drug_type != "Alcohol")
+    log_reg <- glm(positive_for_drug ~ year, data = to_test, 
+                   family = binomial(link = "logit")) %>%
+      tidy()
+   
+    out <- data_frame( Z = round(log_reg[2,4], 1), 
+                       p.value = round(log_reg[2,5], 3)) 
+    
+  }
+  
+  else {
+    to_test <- data %>% 
+      filter(drug_type == drug)
+    log_reg <- glm(positive_for_drug ~ year, data = to_test, 
+                   family = binomial(link = "logit")) %>%
+      tidy()
+    
+    out <- data_frame( Z = round(log_reg[2,4], 1), 
+                       p.value = round(log_reg[2,5], 3)) 
+    
+  }
+  
+  return(out)
+  
+}
 
-
-
-
+test_trend_log_reg(drug = "Stimulant")  
+  
+  
+ 
